@@ -1,0 +1,27 @@
+name: "Release Please"
+
+# Conventional Commits -> automated CHANGELOG, version tag, GitHub Release.
+# Runs on every push to main. The PR it opens accumulates unreleased
+# commits; merging that PR cuts a release.
+#
+# Phase 1 is single-package (release-type: simple) at the monorepo root.
+# When agent/ and finance-api/ start cutting independent versions, flip
+# to manifest mode (release-please-config.json + .release-please-manifest.json).
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          release-type: simple
+          package-name: luci

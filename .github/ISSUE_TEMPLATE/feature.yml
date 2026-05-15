@@ -1,0 +1,54 @@
+name: "Feature discussion"
+description: "Pre-spec discussion. Anything concrete enough to build should run through /speckit-specify directly."
+labels: ["enhancement", "discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template **only** for fuzzy ideas, scope debates, or "should we?"
+        questions. If you already know what to build, run `/speckit-specify` —
+        don't file an issue first.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: "Who hurts today, and how? Avoid solutions."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal (rough)
+      description: "Outline. The spec will firm this up."
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: "What else did you weigh? Why does this option win?"
+
+  - type: checkboxes
+    id: prd_alignment
+    attributes:
+      label: PRD alignment
+      description: "Does this map to PRD §6.1 (F1–F10), Phase 2 (S8), or is it a new product surface? Reject if it's a new MVP feature without a PRD line — open an amendment first."
+      options:
+        - label: "Maps to an existing PRD feature (F1–F10 / S8)"
+        - label: "Maps to an MVP non-goal (PRD §6.3) — needs amendment"
+        - label: "Brand-new product surface — needs PRD update first"
+
+  - type: checkboxes
+    id: principle_check
+    attributes:
+      label: Constitution check
+      description: "Tick any that this proposal would touch or stress."
+      options:
+        - label: "I — Deterministic Money"
+        - label: "II — LGPD lifecycle"
+        - label: "III — Contract-first"
+        - label: "IV — Test-First / Eval-Gated"
+        - label: "V — Idempotency / Audit / Observability"
+        - label: "VI — Prompts / Schemas / Migrations as code"
+        - label: "VII — Tier discipline"

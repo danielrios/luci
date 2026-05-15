@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Spec Kit workflow
+    url: https://github.com/danielrios/luci/blob/main/.specify/memory/constitution.md
+    about: "New features should enter via /speckit-specify, not as a Feature issue. Use the Feature template only when you need to discuss before specifying."
+  - name: Tech Design
+    url: https://github.com/danielrios/luci/blob/main/docs/Luci_Tech_Design_v3.md
+    about: "Architecture, schema, contracts, CI gates. Read this before proposing changes to T1 surfaces."
+  - name: Constitution
+    url: https://github.com/danielrios/luci/blob/main/.specify/memory/constitution.md
+    about: "Seven non-negotiable principles. Conflicts resolve in favor of the constitution until amended."

@@ -1,0 +1,59 @@
+name: "ADR proposal"
+description: "Architectural Decision Record — for choices that lock the system into a direction (e.g. cross-tier tool reassignment, swap of a T1 surface owner, change of hosting target)."
+labels: ["adr", "tier:1"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ADRs are required when you propose any **cross-tier reassignment**
+        (T1↔T2↔T3) or a **destructive** change to a T1 surface (contract
+        removal, prompt freeze break, migration narrowing). When in doubt,
+        write the ADR — they age well.
+
+        File final ADRs as Markdown in `docs/adr/NNNN-slug.md` once accepted.
+        This issue is the discussion surface before merging the file.
+
+  - type: input
+    id: title
+    attributes:
+      label: ADR title
+      placeholder: "0007 — Switch contract codegen from openapi-python-client to fern"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: "What forces are at play? What constraint changed? Cite §s of the constitution or TDD."
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision
+      description: "What is being decided. One paragraph max."
+    validations:
+      required: true
+
+  - type: textarea
+    id: consequences
+    attributes:
+      label: Consequences
+      description: "Positive AND negative. What becomes easier; what becomes harder. Include migration plan and rollback strategy."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: principles_affected
+    attributes:
+      label: Principles affected
+      options:
+        - label: "I — Deterministic Money"
+        - label: "II — LGPD lifecycle"
+        - label: "III — Contract-first"
+        - label: "IV — Test-First / Eval-Gated"
+        - label: "V — Idempotency / Audit / Observability"
+        - label: "VI — Prompts / Schemas / Migrations as code"
+        - label: "VII — Tier discipline"

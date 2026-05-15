@@ -1,0 +1,72 @@
+name: "Constitution amendment"
+description: "Propose a change to .specify/memory/constitution.md. NON-NEGOTIABLE principles require very high bar."
+labels: ["constitution", "tier:1", "governance"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Amendments follow the procedure in `.specify/memory/constitution.md`
+        "Governance" section: open an ADR, run `/speckit-constitution` to
+        update with a Sync Impact Report, bump the version, propagate
+        template changes, merge with Governance approval.
+
+        Three of the seven principles (I, II, IV) are marked **NON-NEGOTIABLE**.
+        Touching those is a MAJOR version bump and requires extraordinary
+        justification — typically a regulatory shift or a falsified premise.
+
+  - type: input
+    id: section
+    attributes:
+      label: Section / principle
+      placeholder: "§III — Contract-First Service Integration"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bump
+    attributes:
+      label: Proposed version bump
+      options:
+        - "PATCH — clarification / wording, no behavior change"
+        - "MINOR — new mandatory gate or materially expanded guidance"
+        - "MAJOR — removal / backward-incompatible redefinition"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current text (quote)
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed text
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: "Why now? What changed in the world (regulation, scale, tooling, incident) that makes the current text wrong?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: migration
+    attributes:
+      label: Migration plan
+      description: "If accepted, what code, prompts, schemas, runbooks, and templates change in lockstep? Per the Sync Impact Report convention."
+    validations:
+      required: true
+
+  - type: input
+    id: linked_adr
+    attributes:
+      label: Linked ADR
+      placeholder: "docs/adr/NNNN-slug.md (must exist or be filed alongside this amendment)"

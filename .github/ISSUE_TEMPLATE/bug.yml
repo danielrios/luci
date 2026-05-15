@@ -1,0 +1,95 @@
+name: "Bug report"
+description: "Something broke. Production incident, failing test, regression, etc."
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing: if this is a **live production incident**, page first
+        (PagerDuty), file second. If it's an LGPD-related failure (deletion
+        worker lateness, audit log gap), tag the on-call legal contact too.
+
+  - type: input
+    id: summary
+    attributes:
+      label: One-line summary
+      placeholder: "Spring returns 500 on /v1/users/{id}/snapshot when ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: "Include error message, stack trace (redacted of PII), and HTTP status if relevant."
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro steps
+      description: "Minimal sequence. If there is a failing test, link it."
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: env
+    attributes:
+      label: Environment
+      multiple: true
+      options:
+        - local
+        - staging / PR preview
+        - production
+        - CI
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface affected
+      multiple: true
+      options:
+        - "agent (Python)"
+        - "finance-api (Kotlin/Spring)"
+        - "contract (openapi.yaml)"
+        - "prompt"
+        - "schema / migration"
+        - "infra (compose / Makefile)"
+        - "CI / GitHub Actions"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: traceid
+    attributes:
+      label: trace_id (if available)
+      placeholder: "ot-trace-..."
+
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Principles potentially violated
+      description: "From the constitution. Tick what applies."
+      options:
+        - label: "I — Deterministic Money (LLM did arithmetic)"
+        - label: "II — LGPD lifecycle (deletion late, audit gap, PII leak)"
+        - label: "III — Contract-first (drift between agent and finance-api)"
+        - label: "IV — Eval gate (regression slipped past)"
+        - label: "V — Idempotency / audit / observability"
+        - label: "VI — Prompts / schemas / migrations as code"

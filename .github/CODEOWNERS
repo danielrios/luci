@@ -1,0 +1,54 @@
+# CODEOWNERS for Luci
+#
+# Surface ownership model is Tier 1 / Tier 2 / Tier 3 from the constitution
+# (.specify/memory/constitution.md §VII). T1 surfaces require a Governance
+# review on every PR; T2 surfaces follow the default review rules. This
+# file makes the tier visible to GitHub's review machinery.
+#
+# Solo maintainer for now — add new handles below the existing line, never
+# replace, so historical PRs stay attributable to the right reviewer set.
+
+# Default owner — falls through for any unmatched path
+*                                                       @danielrios
+
+# ============================================================
+# T1 — Governance surfaces (require Governance review)
+# ============================================================
+
+# Contract — single source of truth between agent and finance-api
+/openapi.yaml                                           @danielrios
+/shared/                                                @danielrios
+
+# Constitution & spec workflow
+/.specify/memory/constitution.md                        @danielrios
+/.specify/templates/                                    @danielrios
+/.specify/extensions/                                   @danielrios
+/.specify/feature.json                                  @danielrios
+
+# Architecture Decision Records
+/docs/adr/                                              @danielrios
+/docs/Luci_Tech_Design_v3.md                            @danielrios
+/docs/PRD_Luci_v2.md                                    @danielrios
+
+# Flyway migrations — additive only; DROP/narrowing requires 2-release window
+/finance-api/src/main/resources/db/migration/           @danielrios
+
+# Agent governance surfaces
+/agent/orchestrator/prompts/                            @danielrios
+/agent/orchestrator/schemas.py                          @danielrios
+/agent/orchestrator/output_validators.py                @danielrios
+/agent/orchestrator/fewshots/                           @danielrios
+
+# ============================================================
+# Infra & CI — repository-wide blast radius
+# ============================================================
+/.github/                                               @danielrios
+/Makefile                                               @danielrios
+/docker-compose.yml                                     @danielrios
+/infra/docker-compose.yml                               @danielrios
+
+# ============================================================
+# T2 — Execution surfaces (default owner)
+# Controllers / services / agent tools / tests
+# ============================================================
+# (intentionally inherits the wildcard owner above)
