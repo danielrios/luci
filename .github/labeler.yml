@@ -1,0 +1,88 @@
+# Auto-labeler config — actions/labeler@v5 schema.
+#
+# Makes the constitution's T1/T2/T3 tier discipline visible on the PR
+# list. The labels here intentionally mirror the surface ownership model
+# in CODEOWNERS so a PR's labels and its required reviewers tell the
+# same story.
+
+"service:agent":
+  - changed-files:
+      - any-glob-to-any-file: "agent/**"
+
+"service:finance-api":
+  - changed-files:
+      - any-glob-to-any-file: "finance-api/**"
+
+"tier:1":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "openapi.yaml"
+          - "shared/**"
+          - "docs/adr/**"
+          - ".specify/memory/constitution.md"
+          - "finance-api/src/main/resources/db/migration/**"
+          - "agent/orchestrator/prompts/**"
+          - "agent/orchestrator/schemas.py"
+          - "agent/orchestrator/output_validators.py"
+          - "agent/orchestrator/fewshots/**"
+
+"surface:contract":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "openapi.yaml"
+          - "shared/**"
+
+"surface:migration":
+  - changed-files:
+      - any-glob-to-any-file: "finance-api/src/main/resources/db/migration/**"
+
+"surface:prompt":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "agent/orchestrator/prompts/**"
+          - "agent/orchestrator/schemas.py"
+          - "agent/orchestrator/output_validators.py"
+          - "agent/orchestrator/fewshots/**"
+
+"area:tests":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/tests/**"
+          - "**/test_*.py"
+          - "**/*Test.kt"
+          - "**/*Test.java"
+          - "**/*IntegrationTest.kt"
+
+"area:infra":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "infra/**"
+          - "docker-compose.yml"
+          - "Makefile"
+          - "**/Dockerfile"
+
+"area:ci":
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+"area:speckit":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".specify/**"
+          - "specs/**"
+          - ".claude/skills/speckit-**/**"
+
+"area:docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docs/**"
+          - "**/*.md"
+
+"deps":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "agent/pyproject.toml"
+          - "agent/uv.lock"
+          - "finance-api/build.gradle.kts"
+          - "finance-api/gradle/libs.versions.toml"
+          - ".github/workflows/**"

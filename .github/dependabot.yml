@@ -1,0 +1,84 @@
+# Dependabot config — version + security updates
+#
+# Phase 1 scope: Python (agent/), Gradle (finance-api/), GitHub Actions,
+# Docker base images. Dependabot will silently no-op on ecosystems whose
+# manifest doesn't exist yet — entries are forward-looking.
+#
+# Group minor + patch into a single weekly PR per ecosystem to reduce
+# noise; security updates always come as separate PRs.
+
+version: 2
+updates:
+
+  # ---- Python (uv resolves pip-compatible deps from pyproject.toml) ----
+  - package-ecosystem: "pip"
+    directory: "/agent"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(agent)"
+    labels:
+      - "deps"
+      - "service:agent"
+    groups:
+      python-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ---- JVM / Gradle ----
+  - package-ecosystem: "gradle"
+    directory: "/finance-api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(finance-api)"
+    labels:
+      - "deps"
+      - "service:finance-api"
+    groups:
+      gradle-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ---- GitHub Actions ----
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "deps(ci)"
+    labels:
+      - "deps"
+      - "area:ci"
+
+  # ---- Docker base images (forward-looking; Dockerfiles land in Phase 1) ----
+  - package-ecosystem: "docker"
+    directory: "/agent"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "deps(agent-docker)"
+    labels:
+      - "deps"
+      - "service:agent"
+      - "area:docker"
+
+  - package-ecosystem: "docker"
+    directory: "/finance-api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "deps(finance-api-docker)"
+    labels:
+      - "deps"
+      - "service:finance-api"
+      - "area:docker"
