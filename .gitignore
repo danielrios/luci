@@ -1,0 +1,47 @@
+# IDEs and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Secrets & Config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# AI Agents & Tooling
+.claude/history/
+.claude/mcp/
+.gemini/
+brain/
+
+# Python Agent
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.uv/
+
+# Spring Boot / Gradle
+.gradle/
+build/
+out/
+target/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# DB Migrations / Flyway
+# Note: Do not ignore actual migration scripts, only local DB artifacts if any
