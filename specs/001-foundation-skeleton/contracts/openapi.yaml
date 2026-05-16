@@ -1,0 +1,284 @@
+openapi: 3.1.0
+info:
+  title: Luci — Foundation Walking Skeleton
+  version: "0.1.0"
+  summary: >-
+    Contract seam between the Python Agent and the Spring Boot Finance API
+    introduced by feature 001-foundation-skeleton. Documents only the three
+    skeleton-level endpoints; domain endpoints land in subsequent features.
+  description: |
+    This file is the **Phase 1 artefact** for `/speckit-plan`. At
+    `/speckit-implement` time it is copied to the repository root as
+    `openapi.yaml` (per TDD §17.3 and Luci constitution III). The Spring
+    Boot Finance API serves the same document via springdoc-openapi; CI
+    enforces parity (FR-002a).
+
+    Endpoints in scope for this feature:
+      - `POST /v1/internal/whoami` (finance-api)
+      - `GET  /health`             (both services — see per-path `servers`)
+      - `GET  /.well-known/jwks.json` (finance-api)
+
+    The Python agent's `httpx` client is regenerated from this file via
+    `openapi-python-client`. Hand-written `httpx` calls to Spring are
+    blocked by the constitutional anti-vibe rule (FR-002b).
+  contact:
+    name: Luci Engineering
+    url: https://github.com/danielriosdev/luci
+
+servers:
+  - url: http://localhost:8080
+    description: Spring Boot Finance API (local profile)
+  - url: https://finance-api.luci.app
+    description: Spring Boot Finance API (prod profile, internal network)
+
+tags:
+  - name: skeleton
+    description: Endpoints that exist only to validate the orchestrator-worker seam.
+  - name: health
+    description: Connectivity probes consumed by humans, curl, and the platform health-check.
+  - name: keys
+    description: JWKS publication for M2M JWT verification.
+
+paths:
+  /v1/internal/whoami:
+    post:
+      tags: [skeleton]
+      operationId: whoami
+      summary: Echo verified M2M JWT claims back to the caller.
+      description: |
+        This endpoint exists solely to validate the M2M auth seam (FR-020).
+        It performs no business logic. It MUST be reachable in local; in
+        prod it is gated to the platform-internal network or behind the
+        same allow-list as the rest of `/v1/internal/*` (FR-020, A-7).
+      security:
+        - m2mJwt: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties: {}
+      responses:
+        "200":
+          description: JWT verified; verified claims echoed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WhoamiResponse"
+        "401":
+          description: |
+            Authentication failed. The body is intentionally minimal — no
+            stack trace, no JWT internals, no hint about which validator
+            stage failed (FR-018, FR-022). Distinct internal log entries
+            differentiate "missing", "invalid signature", "expired", and
+            "audience mismatch".
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetail"
+
+  /health:
+    get:
+      tags: [health]
+      operationId: health
+      summary: Per-service health probe.
+      description: |
+        Returns the Spring Boot Actuator health JSON shape (FR-024). Both
+        services expose this endpoint; the per-path `servers` block lists
+        both base URLs. Unauthenticated (FR-023). Not cached beyond 10 s
+        (FR-025). No LLM/third-party/DB-write side effects (FR-026).
+      servers:
+        - url: http://localhost:8080
+          description: finance-api (local)
+        - url: http://localhost:8000
+          description: agent (local)
+        - url: https://finance-api.luci.app
+          description: finance-api (prod, internal network)
+        - url: https://agent.luci.app
+          description: agent (prod, internal network)
+      responses:
+        "200":
+          description: All required components UP.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthReport"
+              examples:
+                allUp:
+                  value:
+                    status: UP
+                    components:
+                      db:    { status: UP, details: { database: PostgreSQL } }
+                      redis: { status: UP, details: { version: "7.2.4" } }
+        "503":
+          description: |
+            At least one required component is DOWN. HTTP code is non-2xx so
+            platform health-check probes will mark the service unhealthy
+            (FR-023). Top-level `status` is `DOWN`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthReport"
+              examples:
+                redisDown:
+                  value:
+                    status: DOWN
+                    components:
+                      db:    { status: UP }
+                      redis: { status: DOWN, details: { error: "Connection refused" } }
+
+  /.well-known/jwks.json:
+    get:
+      tags: [keys]
+      operationId: jwks
+      summary: Publish the public key set Spring uses to verify M2M JWTs.
+      description: |
+        Standard JWK Set (RFC 7517). Unauthenticated. Reachable on
+        `localhost` in the local profile; in prod, restricted to the
+        platform-internal network or the same allow-list as
+        `/v1/internal/*` (FR-019). Spring's own `NimbusJwtDecoder` fetches
+        this URL via `spring.security.oauth2.resourceserver.jwt.jwk-set-uri`
+        (R-3).
+      responses:
+        "200":
+          description: Current JWK Set.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWKSet"
+
+components:
+  securitySchemes:
+    m2mJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        RS256 JWT minted by the Python agent. Required claims:
+        `iss=python-agent.luci.app`, `aud=finance-api.luci.app`,
+        `sub=service:python-agent`, `exp` ≤ now + 15 min,
+        `user_id` (UUID), `intent` (string), `trace_id` (string).
+        Spring verifies via the JWKS at `/.well-known/jwks.json`
+        (R-3, FR-018, TDD §8.2).
+
+  schemas:
+    WhoamiResponse:
+      type: object
+      description: Echo of the verified claims. Read-only.
+      additionalProperties: false
+      required: [subject, user_id, intent, trace_id]
+      properties:
+        subject:
+          type: string
+          description: The `sub` claim from the verified JWT.
+          examples: ["service:python-agent"]
+        user_id:
+          type: string
+          format: uuid
+          description: The `user_id` claim (UUID) from the verified JWT.
+        intent:
+          type: string
+          description: The `intent` claim from the verified JWT.
+          examples: ["whoami"]
+        trace_id:
+          type: string
+          description: The `trace_id` claim from the verified JWT.
+
+    HealthReport:
+      type: object
+      description: |
+        Spring Boot Actuator `Health` shape. Mirrored byte-for-byte at the
+        `status` + `components.db.status` + `components.redis.status`
+        level by the Python agent's hand-written endpoint.
+      additionalProperties: true
+      required: [status, components]
+      properties:
+        status:
+          $ref: "#/components/schemas/HealthStatus"
+        components:
+          type: object
+          required: [db, redis]
+          additionalProperties:
+            $ref: "#/components/schemas/HealthComponent"
+          properties:
+            db:
+              $ref: "#/components/schemas/HealthComponent"
+            redis:
+              $ref: "#/components/schemas/HealthComponent"
+
+    HealthComponent:
+      type: object
+      additionalProperties: true
+      required: [status]
+      properties:
+        status:
+          $ref: "#/components/schemas/HealthStatus"
+        details:
+          type: object
+          description: Implementation-defined per indicator. Not required.
+          additionalProperties: true
+
+    HealthStatus:
+      type: string
+      enum: [UP, DOWN]
+      description: |
+        Per-component or aggregate status. The top-level `status` is
+        `DOWN` whenever any required component is `DOWN`.
+
+    JWKSet:
+      type: object
+      description: IETF JWK Set (RFC 7517).
+      required: [keys]
+      additionalProperties: false
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: "#/components/schemas/JWK"
+
+    JWK:
+      type: object
+      description: Single RSA public key in JWK form.
+      required: [kty, use, alg, kid, n, e]
+      additionalProperties: false
+      properties:
+        kty:
+          type: string
+          enum: [RSA]
+        use:
+          type: string
+          enum: [sig]
+        alg:
+          type: string
+          enum: [RS256]
+        kid:
+          type: string
+          description: Stable key identifier, format `luci-m2m-<unix-epoch>`.
+          examples: ["luci-m2m-1747315200"]
+        n:
+          type: string
+          description: Base64url-encoded RSA modulus.
+        e:
+          type: string
+          description: Base64url-encoded RSA public exponent.
+          examples: ["AQAB"]
+
+    ProblemDetail:
+      type: object
+      description: |
+        Minimal RFC 7807-style error body. The skeleton uses it only for
+        `401`; downstream features may extend with `type`/`detail`. No
+        stack traces (FR-018, constitution: no raw stack-trace returns).
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+          examples: [401]
+        title:
+          type: string
+          examples: ["Unauthorized"]

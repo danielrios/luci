@@ -1,0 +1,39 @@
+# Luci — Local Infrastructure Stack
+# docker compose -f infra/docker-compose.yml --project-name luci up -d --wait
+#
+# Port-conflict note: if 5432 or 6379 is already bound on your machine,
+# Docker Compose will emit "Bind for 0.0.0.0:<port> failed: port is already
+# allocated" and exit non-zero. Stop the conflicting service or remap the port.
+
+services:
+  postgres:
+    image: ghcr.io/tembo-io/pg-pgmq:pg15
+    container_name: luci_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: luci
+      POSTGRES_PASSWORD: luci
+      POSTGRES_DB: luci
+    volumes:
+      - luci_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U luci -d luci"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: luci_redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  luci_pgdata:

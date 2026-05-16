@@ -43,14 +43,47 @@ These are constitutional NON-NEGOTIABLES — block your own work if a change wou
 
 ## Working with Spec Kit (the workflow on this repo)
 
-Features flow through these slash commands, in order:
+Features flow through five phases. Each step lists the recommended model — use your judgement, but default to the table.
 
-```
-/speckit-specify   → /speckit-clarify   → /speckit-plan   →
-/speckit-tasks     → /speckit-implement → /speckit-analyze
-```
+### Phase 1 — Discovery & Scoping ("what")
 
-Supporting commands: `/speckit-constitution`, `/speckit-checklist`, `/speckit-taskstoissues`.
+| Step | Command | Purpose | Model |
+|---|---|---|---|
+| 1 | `/speckit-specify` | PRD → `spec.md` | Sonnet |
+| 2 | `/speckit-clarify` | Resolve ambiguities | Sonnet |
+| 3 | `/speckit-checklist` | Validate spec completeness | Sonnet |
+
+### Phase 2 — Architecture & Tasking ("how")
+
+| Step | Command | Purpose | Model |
+|---|---|---|---|
+| 4 | `/speckit-plan` | Architecture, contracts, routes | **Opus** |
+| 5 | `/speckit-tasks` | Slice into ordered tasks | Sonnet |
+| 6 | `/speckit-superb-review` | Audit task granularity + spec coverage | **Opus** |
+
+### Phase 3 — Execution & TDD ("build")
+
+| Step | Command | Purpose | Model |
+|---|---|---|---|
+| 7 | `/speckit-superb-tdd` | Enforce failing test first (RED) | Sonnet |
+| 8 | `/speckit-implement` | Write code + tests (GREEN → REFACTOR) | Opus 4.6 (thinking) / Sonnet (thinking) |
+| 9 | `/speckit-superb-debug` | Root-cause investigation (optional) | **Opus** |
+
+### Phase 4 — Quality Gates ("prove it")
+
+| Step | Command | Purpose | Model |
+|---|---|---|---|
+| 10 | `/speckit-superb-verify` | Evidence of passing tests | Sonnet |
+| 11 | `/speckit-superb-critique` | Architectural drift analysis | **Opus** |
+| 12 | `/speckit-superb-respond` | Address review findings | Sonnet |
+
+### Phase 5 — Integration ("ship it")
+
+| Step | Command | Purpose | Model |
+|---|---|---|---|
+| 13 | `/speckit-superb-finish` | Consolidate, PR, merge decision | Sonnet |
+
+Supporting commands (use anytime): `/speckit-constitution`, `/speckit-checklist`, `/speckit-taskstoissues`, `/speckit-analyze`.
 
 **Mandatory hooks** (declared in `.specify/extensions.yml`, do not disable):
 
@@ -77,6 +110,15 @@ All other `speckit.git.commit` hooks are **optional auto-commit** prompts — ac
 - **JVM (Kotlin/Java):** no `Double`/`Float` for currency (Spotbugs); no raw stack trace returns from controllers (PMD); no `@SuppressWarnings("all")`.
 - **Both:** no SQL string concatenation; every `@PostMapping` is `@Idempotent`; every outbound `httpx` POST injects `Idempotency-Key`; no secrets in repo/logs/env-debug endpoints (gitleaks pre-commit + CI).
 - **Contract drift signals (auto-reject):** PR touches both services without `openapi.yaml`; PR touches `openapi.yaml` without a generated-client touch; edit to a `# FROZEN` prompt; hand-written `httpx` to Spring.
+
+## Simplicity & evolution rules
+
+- **Prefer boring architecture over extensible architecture.** A flat function that works beats a plugin system that might.
+- **No abstraction without present-day pressure.** If only one class implements an interface, collapse it. Extract when the second consumer appears, not before.
+- **Prefer schema extensibility over enum proliferation.** Domain concepts that will grow (categories, intents, agent types) should be data-driven rows, not hardcoded enums or `switch` arms. If adding a new concept requires a code deploy, the design is wrong.
+- **New domain concepts should not require orchestration rewrites.** Adding a tool, an intent, or a transaction type should be additive (new file, new row, new config entry) — not a refactor of existing control flow.
+- **Optimize for deletion and refactoring, not permanence.** Small, decoupled units that can be ripped out in one PR are better than deep hierarchies that resist change.
+- **Reject cosmetic abstraction.** `Controller → Service → DomainService → RepositoryAdapter → ProviderFactory` for a single flow is a smell, not sophistication. Every layer must justify its existence with a concrete, present-day reason.
 
 ## Commands
 

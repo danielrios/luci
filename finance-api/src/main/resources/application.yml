@@ -1,0 +1,53 @@
+# Spring Boot common configuration (all profiles)
+# Profile-specific overrides in application-{profile}.yml
+
+server:
+  port: 8080
+
+# --- Actuator ---
+management:
+  endpoints:
+    web:
+      base-path: /
+      path-mapping:
+        health: health
+        prometheus: metrics
+  endpoint:
+    health:
+      show-components: always
+      show-details: always
+
+# --- Flyway ---
+spring:
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+
+  # --- JWT (common claims) ---
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${LUCI_M2M_ISSUER:python-agent.luci.app}
+
+# --- springdoc ---
+springdoc:
+  api-docs:
+    path: /openapi.yaml
+  swagger-ui:
+    enabled: false
+
+# --- Luci custom ---
+luci:
+  m2m:
+    issuer: ${LUCI_M2M_ISSUER:python-agent.luci.app}
+    audience: ${LUCI_M2M_AUDIENCE:finance-api.luci.app}
+    kid: ${LUCI_M2M_KID:}
+    public-key-pem: ${LUCI_M2M_PUBLIC_KEY_PEM:}
+    jwks-url: ${LUCI_M2M_JWKS_URL:http://localhost:8080/.well-known/jwks.json}
+  internal-cidr: ${LUCI_INTERNAL_CIDR:127.0.0.1/32}
+
+# --- Logging ---
+logging:
+  level:
+    root: ${LUCI_LOG_LEVEL:INFO}

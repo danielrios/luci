@@ -1,0 +1,10 @@
+# Gitleaks configuration for Luci
+# Default rules with allowlist for safe example strings (FR-029, FR-031)
+
+[allowlist]
+  description = "Known safe patterns"
+  paths = [
+    '''\.env\.example''',
+    '''specs/''',
+    '''docs/''',
+  ]

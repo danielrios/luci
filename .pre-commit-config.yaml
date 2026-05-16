@@ -1,0 +1,41 @@
+# Pre-commit hooks for Luci
+# Command forms match what `make lint` runs (T010 ↔ T055), so divergence is impossible.
+# (R-14, FR-029, FR-031)
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: ruff
+        args: [check, agent/]
+      - id: ruff-format
+        args: [--check, agent/]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy --strict
+        entry: bash -c 'cd agent && uv run mypy --strict .'
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: ktlint
+        name: ktlint (finance-api)
+        entry: bash -c 'cd finance-api && ./gradlew ktlintCheck --quiet'
+        language: system
+        files: '\.kt$'
+        pass_filenames: false
+
+      - id: lint-no-spring-httpx
+        name: no hand-written httpx to Spring
+        entry: bash scripts/lint-no-spring-httpx.sh
+        language: system
+        files: 'agent/.*\.py$'
+        pass_filenames: false
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        args: [--staged]

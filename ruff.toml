@@ -1,0 +1,9 @@
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = ["E", "F", "I", "T20", "W"]
+ignore = []
+
+[lint.per-file-ignores]
+"agent/finance_api_client/**" = ["E", "F", "I", "T20", "UP", "W"]
