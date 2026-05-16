@@ -1,0 +1,22 @@
+# Spring Boot prod profile configuration
+# Used when SPRING_PROFILES_ACTIVE=prod
+# All values from env vars — no hardcoded defaults.
+# Absence of any ${LUCI_*} placeholder causes ApplicationContextException at boot.
+# (R-17, FR-009, FR-012, T048)
+
+spring:
+  datasource:
+    url: ${LUCI_DB_URL}
+    username: ${LUCI_DB_USER}
+    password: ${LUCI_DB_PASSWORD}
+  data:
+    redis:
+      url: ${LUCI_REDIS_URL}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${LUCI_M2M_JWKS_URL}
+
+luci:
+  internal-cidr: ${LUCI_INTERNAL_CIDR}

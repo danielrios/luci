@@ -1,11 +1,17 @@
-# IDEs and OS
+# ==============================================================================
+# Luci — Walking Skeleton .gitignore
+# ==============================================================================
+
+# --- IDEs and OS ---
 .idea/
 .vscode/
 *.iml
 .DS_Store
 Thumbs.db
+*.tmp
+*.swp
 
-# Secrets & Config
+# --- Secrets & Config ---
 .env
 .env.*
 !.env.example
@@ -13,13 +19,13 @@ Thumbs.db
 *.key
 *.p12
 
-# AI Agents & Tooling
+# --- AI Agents & Tooling ---
 .claude/history/
 .claude/mcp/
 .gemini/
 brain/
 
-# Python Agent
+# --- Python Agent ---
 __pycache__/
 *.py[cod]
 *$py.class
@@ -27,21 +33,30 @@ __pycache__/
 venv/
 env/
 .mypy_cache/
+.ruff_cache/
 .pytest_cache/
 .coverage
 htmlcov/
 .uv/
+dist/
+*.egg-info/
 
-# Spring Boot / Gradle
+# --- Spring Boot / Gradle ---
 .gradle/
 build/
 out/
 target/
+*.class
+*.jar
+# Exception: the Gradle wrapper jar IS committed
 !gradle/wrapper/gradle-wrapper.jar
 
-# Logs
+# --- Logs ---
 *.log
 logs/
 
-# DB Migrations / Flyway
-# Note: Do not ignore actual migration scripts, only local DB artifacts if any
+# ==============================================================================
+# DO NOT add agent/finance_api_client/ to this file.
+# Per R-6 and FR-002b, the generated Python client is committed to the repo
+# so contract drift is diff-visible in code review. See tasks.md T006.
+# ==============================================================================

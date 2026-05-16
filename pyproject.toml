@@ -1,0 +1,9 @@
+# Root-level pyproject.toml — repo-wide tool marker
+# ruff and mypy configs reference this via separate config files (ruff.toml, mypy.ini)
+# This file exists to satisfy SC-009 and plan.md project structure.
+
+[project]
+name = "luci"
+version = "0.1.0"
+description = "Luci — Brazilian personal-finance agent"
+requires-python = ">=3.12"

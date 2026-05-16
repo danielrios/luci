@@ -1,0 +1,22 @@
+# Spring Boot local profile configuration
+# Used when SPRING_PROFILES_ACTIVE=local (default for development)
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/luci
+    username: luci
+    password: luci
+  data:
+    redis:
+      url: redis://localhost:6379/0
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/.well-known/jwks.json
+
+management:
+  endpoint:
+    health:
+      cache:
+        time-to-live: 0s
